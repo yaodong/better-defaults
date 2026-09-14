@@ -33,7 +33,6 @@ lnk ideavim/.ideavimrc         "$HOME/.ideavimrc"
 lnk nvim                       "$HOME/.config/nvim"
 lnk starship/starship.toml     "$HOME/.config/starship.toml"
 lnk tmux                       "$HOME/.config/tmux"
-lnk zed                        "$HOME/.config/zed"
 lnk zsh/.zshrc                 "$HOME/.zshrc"
 
 # Trust the mise global config so its [settings] block loads (mise won't parse

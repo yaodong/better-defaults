@@ -36,7 +36,6 @@ Example: `nvim/` → `~/.config/nvim`
 | `tmux` | |
 | `ghostty` | |
 | `cursor` | |
-| `zed` | Intentionally privacy-locked: `disable_ai`, `auto_update: false`, telemetry off, sign-in/collaboration hidden. Do not re-enable these. |
 
 ## Theme System
 

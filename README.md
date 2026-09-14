@@ -32,7 +32,6 @@ Each `<tool>/` directory at repo root is symlinked into `$HOME` by `scripts/link
 | `ideavim` | [IdeaVim](https://github.com/JetBrains/ideavim) config for JetBrains IDEs |
 | `ghostty` | [Ghostty](https://ghostty.org/) terminal config |
 | `cursor` | [Cursor](https://cursor.sh/) editor config |
-| `zed` | [Zed](https://zed.dev/) editor config; privacy-locked (AI, telemetry, auto-update, sign-in all disabled) |
 
 ### CLI Tools
 

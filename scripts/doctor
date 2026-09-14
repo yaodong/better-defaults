@@ -69,7 +69,6 @@ check_link "$HOME/.ideavimrc"                "ideavim/.ideavimrc"
 check_link "$HOME/.config/nvim"              "nvim"
 check_link "$HOME/.config/starship.toml"     "starship/starship.toml"
 check_link "$HOME/.config/tmux"              "tmux"
-check_link "$HOME/.config/zed"               "zed"
 check_link "$HOME/.zshrc"                    "zsh/.zshrc"
 
 # --- Git config (global) ---
