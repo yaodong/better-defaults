@@ -33,5 +33,8 @@ mise.toml
 
 **/.claude/settings.local.json
 .worktrees/
+.worktree/
 
-docs/superpowers/
+/docs/superpowers/
+
+**/.claude/.cc-writes/
