@@ -50,6 +50,7 @@ check_link() {
 section "Tools"
 check_cmd brew "Run ./scripts/install"
 check_cmd git
+check_cmd gh "brew install gh"
 check_cmd nvim "brew install neovim"
 check_cmd tmux "brew install tmux"
 check_cmd starship "brew install starship"

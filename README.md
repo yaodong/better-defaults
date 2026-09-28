@@ -37,7 +37,7 @@ Each `<tool>/` directory at repo root is symlinked into `$HOME` by `scripts/link
 
 Installed via Homebrew. Full manifest in `Brewfile`.
 
-[ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [bat](https://github.com/sharkdp/bat) | [eza](https://github.com/eza-community/eza) | [fzf](https://github.com/junegunn/fzf) | [zoxide](https://github.com/ajeetdsouza/zoxide) | [btop](https://github.com/aristocratos/btop) | [fastfetch](https://github.com/fastfetch-cli/fastfetch) | [mise](https://github.com/jdx/mise) | [lazydocker](https://github.com/jesseduffield/lazydocker)
+[ripgrep](https://github.com/BurntSushi/ripgrep) | [fd](https://github.com/sharkdp/fd) | [bat](https://github.com/sharkdp/bat) | [eza](https://github.com/eza-community/eza) | [fzf](https://github.com/junegunn/fzf) | [zoxide](https://github.com/ajeetdsouza/zoxide) | [btop](https://github.com/aristocratos/btop) | [fastfetch](https://github.com/fastfetch-cli/fastfetch) | [mise](https://github.com/jdx/mise) | [lazydocker](https://github.com/jesseduffield/lazydocker) | [gh](https://cli.github.com/)
 
 ## Theme System
 
