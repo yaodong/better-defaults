@@ -56,6 +56,7 @@ check_cmd tmux "brew install tmux"
 check_cmd starship "brew install starship"
 check_cmd fzf "brew install fzf"
 check_cmd rg "brew install ripgrep"
+check_cmd skhd "brew install asmvik/formulae/skhd"
 
 # --- Dotfile symlinks ---
 section "Dotfile symlinks"
@@ -68,6 +69,7 @@ check_link "$HOME/.config/git/ignore"        "git/ignore"
 check_link "$HOME/.config/mise/config.toml"  "mise/config.toml"
 check_link "$HOME/.ideavimrc"                "ideavim/.ideavimrc"
 check_link "$HOME/.config/nvim"              "nvim"
+check_link "$HOME/.config/skhd"              "skhd"
 check_link "$HOME/.config/starship.toml"     "starship/starship.toml"
 check_link "$HOME/.config/tmux"              "tmux"
 check_link "$HOME/.zshrc"                    "zsh/.zshrc"
@@ -113,6 +115,13 @@ else
   warn "skipping Claude settings check ($claude_settings missing or ruby unavailable)"
 fi
 
+# --- Global hotkeys ---
+section "Global hotkeys"
+if pgrep -xq skhd; then
+  pass "skhd running"
+else
+  warn "skhd not running" "run 'skhd --start-service', then grant skhd Accessibility permission (re-grant after 'brew upgrade skhd')"
+fi
 # --- Summary ---
 section "Summary"
 if [ "$fails" -eq 0 ] && [ "$warns" -eq 0 ]; then

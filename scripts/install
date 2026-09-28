@@ -36,7 +36,7 @@ echo "Installing packages from Brewfile..."
 brew update
 # Third-party taps (e.g. hashicorp/tap) require an explicit trust step since
 # Homebrew 4.6; auto-trust the taps we declare so `brew bundle` doesn't halt.
-for tap in hashicorp/tap; do
+for tap in hashicorp/tap asmvik/formulae; do
   brew trust "$tap" >/dev/null 2>&1 || true
 done
 brew bundle --file "$REPO_DIR/Brewfile"
@@ -80,6 +80,12 @@ if [ ! -d "$HOME/.config/tmux/plugins/tpm" ]; then
 else
   echo "TPM already installed"
 fi
+
+section "skhd"
+# Registers a launchd agent. skhd exits until it has Accessibility permission;
+# launchd keeps retrying, so granting it later is enough.
+skhd --restart-service >/dev/null 2>&1 || skhd --start-service
+echo "skhd service registered; grant skhd Accessibility permission (System Settings > Privacy & Security > Accessibility)"
 
 section "Claude Code"
 mise exec python -- "$REPO_DIR/scripts/install-claude-statusline"

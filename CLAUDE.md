@@ -36,6 +36,7 @@ Example: `nvim/` → `~/.config/nvim`
 | `tmux` | |
 | `ghostty` | |
 | `cursor` | |
+| `skhd` | Global hotkeys (`~/.config/skhd/skhdrc`). Needs Accessibility permission; apply edits with `skhd --restart-service`. |
 
 ## Theme System
 
@@ -54,6 +55,7 @@ When modifying themes: preserve the flow `macOS appearance -> app configs`, with
 ## Keybind Conventions
 
 - **Avoid conflicts across layers.** When adding or updating keybinds in any config, check that they don't shadow keybinds in tools that run inside it (e.g., terminal keybinds must not conflict with Neovim keybinds, since Neovim runs inside the terminal).
+- **Global hotkeys (skhd) sit above every app.** `skhd/skhdrc` holds app launchers, mostly mirroring Omarchy's (`cmd+enter` Ghostty, `cmd+shift+{return,b}` Chrome, `f` Finder, `n` Cursor, `e` Gmail (Chrome PWA), `c` Calendar, `l` Slack, `/` 1Password). These are deliberate overrides in every app, including Ghostty (no fullscreen toggle) — e.g. they shadow Cursor's `cmd+shift+f` search and Chrome's `cmd+shift+n` incognito. Use `~` passthrough (process-list syntax) for apps that must keep a key.
 
 ## Neovim Configuration
 

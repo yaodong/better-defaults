@@ -32,6 +32,7 @@ Each `<tool>/` directory at repo root is symlinked into `$HOME` by `scripts/link
 | `ideavim` | [IdeaVim](https://github.com/JetBrains/ideavim) config for JetBrains IDEs |
 | `ghostty` | [Ghostty](https://ghostty.org/) terminal config |
 | `cursor` | [Cursor](https://cursor.sh/) editor config |
+| `skhd` | [skhd](https://github.com/asmvik/skhd) global app-launcher hotkeys modeled on Omarchy (`cmd+enter` Ghostty, `cmd+shift+b` Chrome, …) |
 
 ### CLI Tools
 
