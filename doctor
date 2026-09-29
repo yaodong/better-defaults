@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# Validate the local dev environment: tools installed, dotfiles linked,
+# git/Claude/overcommit wired up. Reports only; run ./install or ./link
+# to fix what's broken.
+
+set -uo pipefail
+
+BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$(uname -s)" in
+  Darwin) PLATFORM=macos ;;
+  Linux) [ -d /usr/share/omarchy ] && PLATFORM=omarchy || PLATFORM=linux ;;
+  *) PLATFORM=unknown ;;
+esac
+
+if [ -t 1 ]; then
+  C_OK=$'\033[32m'; C_FAIL=$'\033[31m'; C_WARN=$'\033[33m'; C_DIM=$'\033[2m'; C_RST=$'\033[0m'
+else
+  C_OK=""; C_FAIL=""; C_WARN=""; C_DIM=""; C_RST=""
+fi
+
+fails=0
+warns=0
+
+pass() { printf "  %s✓%s %s\n" "$C_OK" "$C_RST" "$1"; }
+fail() { printf "  %s✗%s %s\n" "$C_FAIL" "$C_RST" "$1"; [ $# -ge 2 ] && printf "    %s%s%s\n" "$C_DIM" "$2" "$C_RST"; fails=$((fails+1)); }
+warn() { printf "  %s!%s %s\n" "$C_WARN" "$C_RST" "$1"; [ $# -ge 2 ] && printf "    %s%s%s\n" "$C_DIM" "$2" "$C_RST"; warns=$((warns+1)); }
+section() { printf "\n[%s]\n" "$1"; }
+
+# Install hint per platform: check_cmd <cmd> <brew formula> [omarchy package]
+check_cmd() {
+  local cmd="$1" hint
+  if [ "$PLATFORM" = macos ]; then hint="brew install ${2:-$1}"; else hint="omarchy pkg add ${3:-${2:-$1}}"; fi
+  if command -v "$cmd" &>/dev/null; then
+    pass "$cmd ($(command -v "$cmd"))"
+  else
+    fail "$cmd not found" "$hint"
+  fi
+}
+
+# check_link <link path> <expected target>; a relative target is taken as a
+# path inside the repo, and a target prefixed with "=" must match literally.
+check_link() {
+  local dst="$1" expected_src="$2"
+  if [[ $expected_src == =* ]]; then
+    expected_src="${expected_src#=}"
+  elif [[ $expected_src != /* ]]; then
+    expected_src="$BASE_DIR/$expected_src"
+  fi
+  if [ ! -e "$dst" ] && [ ! -L "$dst" ]; then
+    fail "$dst missing" "run ./link"
+  elif [ ! -L "$dst" ]; then
+    fail "$dst is not a symlink" "run ./link"
+  else
+    local actual; actual="$(readlink "$dst")"
+    if [ "$actual" = "$expected_src" ]; then
+      pass "$dst"
+    else
+      fail "$dst points to wrong target" "$actual (expected $expected_src)"
+    fi
+  fi
+}
+
+echo "Platform: $PLATFORM"
+
+# --- Tools ---
+section "Tools"
+[ "$PLATFORM" = macos ] && check_cmd brew "Run ./install"
+check_cmd git
+check_cmd gh
+check_cmd nvim neovim
+check_cmd tmux
+check_cmd starship
+check_cmd mise
+check_cmd fzf
+check_cmd rg ripgrep
+check_cmd eza
+check_cmd zoxide
+check_cmd bat
+check_cmd gum
+[ "$PLATFORM" = macos ] && check_cmd skhd asmvik/formulae/skhd
+
+# --- Dotfile symlinks ---
+section "Dotfile symlinks"
+check_link "$HOME/.claude/statusline.sh"     "claude/statusline.sh"
+check_link "$HOME/.config/ghostty"           "ghostty"
+check_link "$HOME/.config/git/config"        "git/config"
+check_link "$HOME/.config/git/ignore"        "git/ignore"
+check_link "$HOME/.config/mise/config.toml"  "mise/config.toml"
+check_link "$HOME/.config/nvim"              "nvim"
+check_link "$HOME/.config/starship.toml"     "starship/starship.toml"
+check_link "$HOME/.config/tmux"              "tmux"
+case "$PLATFORM" in
+  macos)
+    check_link "$HOME/.local/bin/theme-sync"  "bin/.local/bin/theme-sync"
+    check_link "$HOME/.ideavimrc"             "ideavim/.ideavimrc"
+    check_link "$HOME/.config/skhd"           "skhd"
+    check_link "$HOME/.zshrc"                 "zsh/.zshrc"
+    check_link "$BASE_DIR/ghostty/platform.conf" "=macos.conf"
+    ;;
+  omarchy)
+    check_link "$HOME/.bashrc"                "bash/.bashrc"
+    check_link "$HOME/.config/hypr/bindings.lua" "hypr/bindings.lua"
+    check_link "$BASE_DIR/ghostty/platform.conf" "=omarchy.conf"
+    check_link "$BASE_DIR/nvim/lua/plugins/theme.lua" "$HOME/.local/state/omarchy/current/theme/neovim.lua"
+    ;;
+esac
+
+# --- Git config (global) ---
+section "Git"
+git_name="$(git config --global user.name || true)"
+if [ -n "$git_name" ]; then pass "user.name = $git_name"; else fail "user.name not set"; fi
+git_local="$HOME/.config/git/config.local"
+git_email="$(git config -f "$git_local" user.email 2>/dev/null || true)"
+if [ "$git_email" = "yaodong.dev@gmail.com" ]; then
+  pass "user.email = $git_email ($git_local)"
+else
+  warn "user.email = ${git_email:-<unset>} in $git_local (expected yaodong.dev@gmail.com)" "run ./install to set it"
+fi
+
+# --- mise ---
+section "mise"
+if command -v mise &>/dev/null; then
+  missing="$(cd "$BASE_DIR" && mise ls --current --missing 2>/dev/null | awk '{print $1 "@" $2}' | tr '\n' ' ')"
+  if [ -z "$missing" ]; then
+    pass "all configured tools installed"
+  else
+    warn "not installed: $missing" "run 'mise install' (auto-install is disabled)"
+  fi
+fi
+
+# --- Tmux ---
+section "Tmux"
+if [ -d "$BASE_DIR/tmux/plugins/tpm" ]; then
+  pass "TPM installed"
+else
+  fail "TPM missing" "run ./install"
+fi
+
+# --- Overcommit ---
+section "Overcommit"
+if command -v overcommit &>/dev/null || (command -v mise &>/dev/null && MISE_EXEC_AUTO_INSTALL=0 mise exec ruby -- overcommit --version &>/dev/null); then
+  pre_commit="$BASE_DIR/.git/hooks/pre-commit"
+  if [ -f "$pre_commit" ] && grep -q overcommit "$pre_commit" 2>/dev/null; then
+    pass "hooks wired in this repo"
+  else
+    fail "hooks not wired in this repo" "run ./link"
+  fi
+else
+  warn "overcommit not installed; skipping" "run ./install"
+fi
+
+# --- Claude Code ---
+section "Claude Code"
+claude_settings="$HOME/.claude/settings.json"
+statusline_script="$HOME/.claude/statusline.sh"
+if [ -f "$claude_settings" ] && command -v python3 &>/dev/null; then
+  if python3 -c "
+import json, sys
+sl = json.load(open('$claude_settings')).get('statusLine') or {}
+sys.exit(0 if sl.get('type') == 'command' and sl.get('command') == '$statusline_script' else 1)
+" 2>/dev/null; then
+    pass "statusLine configured"
+  else
+    fail "statusLine not configured" "run ./claude/install-claude-statusline"
+  fi
+else
+  warn "skipping Claude settings check ($claude_settings missing or python3 unavailable)"
+fi
+
+# --- Global hotkeys ---
+if [ "$PLATFORM" = macos ]; then
+  section "Global hotkeys"
+  if pgrep -xq skhd; then
+    pass "skhd running"
+  else
+    warn "skhd not running" "run 'skhd --start-service', then grant skhd Accessibility permission (re-grant after 'brew upgrade skhd')"
+  fi
+fi
+
+# --- Summary ---
+section "Summary"
+if [ "$fails" -eq 0 ] && [ "$warns" -eq 0 ]; then
+  printf "  %sAll checks passed.%s\n" "$C_OK" "$C_RST"
+  exit 0
+elif [ "$fails" -eq 0 ]; then
+  printf "  %s%d warning(s).%s\n" "$C_WARN" "$warns" "$C_RST"
+  exit 0
+else
+  printf "  %s%d failure(s)%s, %s%d warning(s)%s.\n" "$C_FAIL" "$fails" "$C_RST" "$C_WARN" "$warns" "$C_RST"
+  exit 1
+fi

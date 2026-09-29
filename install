@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# One-time setup for macOS or Omarchy. On macOS this installs Homebrew and the
+# Brewfile; Omarchy already ships the CLI tools, so it only adds what's missing.
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GIT_EMAIL="yaodong.dev@gmail.com"
+
+case "$(uname -s)" in
+  Darwin) PLATFORM=macos ;;
+  Linux) [ -d /usr/share/omarchy ] && PLATFORM=omarchy || PLATFORM=linux ;;
+  *) PLATFORM=unknown ;;
+esac
+
+section() { printf "\n[%s]\n" "$1"; }
+
+load_homebrew_env() {
+  if command -v brew &>/dev/null; then
+    return
+  fi
+
+  if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+}
+
+echo "Platform: $PLATFORM"
+
+if [ "$PLATFORM" = macos ]; then
+  section "Homebrew"
+  if ! command -v brew &>/dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    load_homebrew_env
+  else
+    echo "Homebrew is installed"
+  fi
+
+  if ! command -v brew &>/dev/null; then
+    echo "Error: Homebrew was installed but is not available on PATH." >&2
+    exit 1
+  fi
+
+  echo "Installing packages from Brewfile..."
+  brew update
+  # Third-party taps (e.g. hashicorp/tap) require an explicit trust step since
+  # Homebrew 4.6; auto-trust the taps we declare so `brew bundle` doesn't halt.
+  for tap in hashicorp/tap asmvik/formulae; do
+    brew trust "$tap" >/dev/null 2>&1 || true
+  done
+  brew bundle --file "$REPO_DIR/Brewfile"
+fi
+
+section "Dotfiles"
+"$REPO_DIR/link"
+
+section "Runtimes"
+# The global config (mise/config.toml) disables auto-install, so install
+# explicitly: global tools plus this repo's ruby/python (for overcommit).
+mise trust "$REPO_DIR/.mise.toml"
+mise install --cd "$REPO_DIR"
+
+section "Overcommit"
+mise exec ruby -- gem install overcommit
+# Re-run link so it can wire the hooks now that the gem exists.
+"$REPO_DIR/link" >/dev/null
+echo "hooks installed"
+
+section "Git"
+# Email is machine-local (not in git/config), so each machine can differ.
+git_local="$HOME/.config/git/config.local"
+if git config -f "$git_local" user.email >/dev/null 2>&1; then
+  echo "user.email already set in $git_local"
+else
+  git config -f "$git_local" user.email "$GIT_EMAIL"
+  echo "user.email set in $git_local"
+fi
+
+if [ "$PLATFORM" = macos ]; then
+  section "npm"
+  mkdir -p "$HOME/.npm-global/bin"
+  if command -v npm &>/dev/null; then
+    npm config set prefix "$HOME/.npm-global"
+  elif ! grep -qxF "prefix=$HOME/.npm-global" "$HOME/.npmrc" 2>/dev/null; then
+    # Append (don't clobber an existing ~/.npmrc that may hold registry/auth tokens).
+    echo "prefix=$HOME/.npm-global" >>"$HOME/.npmrc"
+  fi
+  echo "global prefix configured"
+fi
+
+section "Tmux"
+tpm="$REPO_DIR/tmux/plugins/tpm"
+if [ ! -d "$tpm" ]; then
+  echo "Installing TPM..."
+  git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm"
+else
+  echo "TPM already installed"
+fi
+TMUX_PLUGIN_MANAGER_PATH="$REPO_DIR/tmux/plugins/" "$tpm/bin/install_plugins" >/dev/null
+echo "plugins installed"
+
+if [ "$PLATFORM" = macos ]; then
+  section "skhd"
+  # Registers a launchd agent. skhd exits until it has Accessibility permission;
+  # launchd keeps retrying, so granting it later is enough.
+  skhd --restart-service >/dev/null 2>&1 || skhd --start-service
+  echo "skhd service registered; grant skhd Accessibility permission (System Settings > Privacy & Security > Accessibility)"
+fi
+
+section "Claude Code"
+python3 "$REPO_DIR/claude/install-claude-statusline"
+
+printf "\nSetup completed successfully!\n"

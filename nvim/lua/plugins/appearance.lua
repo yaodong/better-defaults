@@ -1,3 +1,5 @@
+local platform = require("config.platform")
+
 local function is_dark()
   local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
   if handle then
@@ -8,13 +10,7 @@ local function is_dark()
   return false
 end
 
-local dark = is_dark()
-
-if not dark then
-  vim.o.background = "light"
-end
-
-return {
+local specs = {
 
   {
     "folke/noice.nvim",
@@ -22,6 +18,33 @@ return {
       cmdline = { format = { cmdline = { lang = "" } } },
     },
   },
+
+  -- incline: creating lightweight floating statuslines
+  {
+    "b0o/incline.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("incline").setup({
+        hide = {
+          cursorline = true,
+        },
+      })
+    end,
+  },
+}
+
+-- Theme customization is macOS-only. On Omarchy the colorscheme comes from
+-- lua/plugins/theme.lua (Omarchy's theme picker); see all-themes.lua and
+-- omarchy-theme-hotreload.lua.
+if not platform.macos then
+  return specs
+end
+
+if not is_dark() then
+  vim.o.background = "light"
+end
+
+vim.list_extend(specs, {
 
   {
     "LazyVim/LazyVim",
@@ -54,19 +77,8 @@ return {
     end,
   },
 
-  -- incline: creating lightweight floating statuslines
-  {
-    "b0o/incline.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("incline").setup({
-        hide = {
-          cursorline = true,
-        },
-      })
-    end,
-  },
-
   -- Disable unused default theme
   { "folke/tokyonight.nvim", enabled = false },
-}
+})
+
+return specs

@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# Symlink dotfiles into $HOME for the current platform (macOS or Omarchy).
+# Idempotent and safe to re-run: an existing real file or directory at a
+# target is moved to <target>.bak (timestamped if that exists) before linking.
+
+set -e
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$(uname -s)" in
+  Darwin) PLATFORM=macos ;;
+  Linux) [ -d /usr/share/omarchy ] && PLATFORM=omarchy || PLATFORM=linux ;;
+  *) PLATFORM=unknown ;;
+esac
+
+echo "Linking dotfiles from: $REPO_DIR ($PLATFORM)"
+
+backup() {
+  local dst="$1" bak="$1.bak"
+  [ -e "$bak" ] || [ -L "$bak" ] && bak="$dst.bak.$(date +%s)"
+  mv "$dst" "$bak"
+  echo "  BACKUP $dst -> $bak"
+}
+
+lnk() {
+  local src="$REPO_DIR/$1" dst="$2"
+  mkdir -p "$(dirname "$dst")"
+  # Back up a pre-existing real file or directory (ln gives no backup).
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+    backup "$dst"
+  fi
+  ln -sfn "$src" "$dst"
+  echo "  $dst -> $src"
+}
+
+# Links that live inside the repo (gitignored) and pick a per-machine target.
+repo_lnk() {
+  local target="$1" dst="$REPO_DIR/$2"
+  ln -sfn "$target" "$dst"
+  echo "  $dst -> $target"
+}
+
+# --- Shared ---
+lnk claude/statusline.sh       "$HOME/.claude/statusline.sh"
+lnk ghostty                    "$HOME/.config/ghostty"
+lnk git/config                 "$HOME/.config/git/config"
+lnk git/ignore                 "$HOME/.config/git/ignore"
+lnk mise/config.toml           "$HOME/.config/mise/config.toml"
+lnk nvim                       "$HOME/.config/nvim"
+lnk starship/starship.toml     "$HOME/.config/starship.toml"
+lnk tmux                       "$HOME/.config/tmux"
+
+# --- Platform ---
+case "$PLATFORM" in
+  macos)
+    lnk bin/.local/bin/theme-sync "$HOME/.local/bin/theme-sync"
+    lnk ideavim/.ideavimrc        "$HOME/.ideavimrc"
+    lnk skhd                      "$HOME/.config/skhd"
+    lnk zsh/.zshrc                "$HOME/.zshrc"
+    repo_lnk macos.conf           ghostty/platform.conf
+    ;;
+  omarchy)
+    lnk bash/.bashrc              "$HOME/.bashrc"
+    lnk hypr/bindings.lua         "$HOME/.config/hypr/bindings.lua"
+    repo_lnk omarchy.conf         ghostty/platform.conf
+    # Omarchy's theme picker drives Neovim's colorscheme through this link.
+    repo_lnk "$HOME/.local/state/omarchy/current/theme/neovim.lua" nvim/lua/plugins/theme.lua
+    ;;
+  *)
+    echo "  (no platform-specific links for $PLATFORM)"
+    ;;
+esac
+
+# Trust the mise global config so its [settings] block loads (mise won't parse
+# untrusted configs that can affect the environment). Only auto-trust when the
+# file is unmodified vs HEAD — a local edit must be reviewed via `mise trust`.
+# Trust the repo file itself, not the ~/.config symlink: mise resolves the
+# symlink to its real path before checking trust, so trusting the link is a no-op.
+if command -v mise &>/dev/null; then
+  if git -C "$REPO_DIR" cat-file -e HEAD:mise/config.toml 2>/dev/null &&
+    git -C "$REPO_DIR" diff --quiet HEAD -- mise/config.toml; then
+    if mise trust "$REPO_DIR/mise/config.toml" >/dev/null 2>&1; then
+      echo "mise: trusted global config."
+    else
+      echo "mise: trust failed; run 'mise trust ~/.config/mise/config.toml' manually."
+    fi
+  else
+    echo "mise: skipping trust (mise/config.toml differs from HEAD; run 'mise trust' manually)."
+  fi
+fi
+
+# Install overcommit git hooks (idempotent; skips if gem not installed).
+# overcommit is a mise-managed ruby gem, so prefer `mise exec` — the bare gem
+# isn't on PATH when this runs from ./install (mise isn't activated there).
+if command -v overcommit &>/dev/null; then
+  overcommit=(overcommit)
+elif command -v mise &>/dev/null && MISE_EXEC_AUTO_INSTALL=0 mise exec ruby -- overcommit --version &>/dev/null; then
+  overcommit=(mise exec ruby -- overcommit)
+else
+  overcommit=()
+fi
+
+if [ ${#overcommit[@]} -gt 0 ]; then
+  (cd "$REPO_DIR" && "${overcommit[@]}" --install >/dev/null && "${overcommit[@]}" --sign >/dev/null)
+  echo "Overcommit: hooks installed and signed."
+else
+  echo "Overcommit: skipping (not installed; run ./install)."
+fi
+
+echo "Done."

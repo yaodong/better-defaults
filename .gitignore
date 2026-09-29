@@ -5,3 +5,7 @@
 tmux/plugins/
 .claude/settings.local.json
 docs
+
+# Backups (files or folders), e.g. config.omarchy.bak, bindings.lua.bak.1790618448
+*.bak
+*.bak.*

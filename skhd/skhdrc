@@ -8,7 +8,6 @@
 cmd - return          : open -a Ghostty
 cmd + shift - return  : open -a "Google Chrome"
 cmd + shift - b       : open -a "Google Chrome"
-cmd + shift - n       : open -a Cursor
 cmd + shift - e       : open -a Gmail
 cmd + shift - c       : open -a Calendar
 cmd + shift - l       : open -a Slack

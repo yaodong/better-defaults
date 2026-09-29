@@ -1,35 +1,21 @@
-theme = light:Rose Pine Dawn,dark:Rose Pine Moon
+# Shared by macOS and Omarchy. Platform settings (theme, font size, window)
+# live in macos.conf / omarchy.conf; ./link points platform.conf at one of them.
 
+# Font
 font-family = "JetBrainsMono Nerd Font"
 font-family = "Noto Sans Mono CJK SC"
 font-style = Regular
-font-size = 13.5
-font-thicken = true
-adjust-cell-height = 20%
-window-colorspace = display-p3
 
+# Cursor
 cursor-style = block
 cursor-style-blink = false
-cursor-color = cell-foreground
-cursor-text = cell-background
 
-mouse-scroll-multiplier = 2
-macos-option-as-alt = true
-shell-integration-features = cursor, sudo, no-title
-
-window-padding-x = 5
-window-padding-y = 0
-window-padding-balance = true
-window-save-state = always
-
-copy-on-select = clipboard
+# Clipboard
 clipboard-trim-trailing-spaces = true
-quit-after-last-window-closed = true
 
-# Disable split keybindings (using tmux instead)
-keybind = super+d=unbind
-keybind = super+shift+d=unbind
-keybind = super+shift+enter=unbind
-keybind = super+[=unbind
-keybind = super+]=unbind
-keybind = super+ctrl+==unbind
+# Send Shift+Enter as CSI-u so TUIs can distinguish it from Enter.
+keybind = shift+enter=csi:13;2u
+# Legacy encoding sends Alt+Shift+Enter the same as Alt+Enter; send CSI-u so tmux can match M-S-Enter.
+keybind = alt+shift+enter=csi:13;4u
+
+config-file = ?platform.conf
