@@ -45,7 +45,7 @@ lnk claude/statusline.sh       "$HOME/.claude/statusline.sh"
 lnk ghostty                    "$HOME/.config/ghostty"
 lnk git/config                 "$HOME/.config/git/config"
 lnk git/ignore                 "$HOME/.config/git/ignore"
-lnk mise/config.toml           "$HOME/.config/mise/config.toml"
+lnk mise                       "$HOME/.config/mise"
 lnk nvim                       "$HOME/.config/nvim"
 lnk starship/starship.toml     "$HOME/.config/starship.toml"
 lnk tmux                       "$HOME/.config/tmux"
@@ -78,8 +78,12 @@ esac
 # symlink to its real path before checking trust, so trusting the link is a no-op.
 if command -v mise &>/dev/null; then
   if git -C "$REPO_DIR" cat-file -e HEAD:mise/config.toml 2>/dev/null &&
-    git -C "$REPO_DIR" diff --quiet HEAD -- mise/config.toml; then
-    if mise trust "$REPO_DIR/mise/config.toml" >/dev/null 2>&1; then
+    git -C "$REPO_DIR" diff --quiet HEAD -- mise/; then
+    trusted=1
+    for f in "$REPO_DIR"/mise/config*.toml; do
+      mise trust "$f" >/dev/null 2>&1 || trusted=0
+    done
+    if [ "$trusted" = 1 ]; then
       echo "mise: trusted global config."
     else
       echo "mise: trust failed; run 'mise trust ~/.config/mise/config.toml' manually."
@@ -90,12 +94,14 @@ if command -v mise &>/dev/null; then
 fi
 
 # Install overcommit git hooks (idempotent; skips if gem not installed).
-# overcommit is a mise-managed ruby gem, so prefer `mise exec` — the bare gem
-# isn't on PATH when this runs from ./install (mise isn't activated there).
+# overcommit is a mise-managed ruby gem that isn't on PATH when this runs from
+# ./install (mise isn't activated there). Look it up with `mise where`, which
+# only reads: `mise exec ruby` would install every missing tool in the config.
+ruby_bin="$(mise where ruby 2>/dev/null || true)/bin"
 if command -v overcommit &>/dev/null; then
   overcommit=(overcommit)
-elif command -v mise &>/dev/null && MISE_EXEC_AUTO_INSTALL=0 mise exec ruby -- overcommit --version &>/dev/null; then
-  overcommit=(mise exec ruby -- overcommit)
+elif [ -x "$ruby_bin/overcommit" ]; then
+  overcommit=(env PATH="$ruby_bin:$PATH" overcommit)
 else
   overcommit=()
 fi

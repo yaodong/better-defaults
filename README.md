@@ -35,7 +35,7 @@ Each `<tool>/` directory at repo root is symlinked into `$HOME` by `link`. Examp
 | `ghostty` | both | [Ghostty](https://ghostty.org/) terminal; shared `config` plus `macos.conf` / `omarchy.conf` |
 | `git` | both | Global git config (Omarchy's defaults) and ignore; email goes in `~/.config/git/config.local` |
 | `starship` | both | [Starship](https://starship.rs/) prompt (Omarchy's); hostname shown over SSH |
-| `mise` | both | [mise](https://github.com/jdx/mise) global tools; auto-install disabled |
+| `mise` | both | [mise](https://github.com/jdx/mise) global tools; auto-install disabled. per-user tools in `config.<whoami>.toml` via `MISE_ENV` (JVM tools only for `yaodong.z`) |
 | `claude` | both | Claude Code statusline |
 | `hypr` | Omarchy | Hyprland `bindings.lua`: Mac-style `Super` shortcuts on top of Omarchy's defaults |
 | `bash` | Omarchy | Omarchy's `.bashrc`; supports `~/.bashrc_local` for machine-local overrides |

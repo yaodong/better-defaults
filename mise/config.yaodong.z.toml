@@ -1,0 +1,8 @@
+# JVM tools, only for the macOS user "yaodong.z". mise loads config.<MISE_ENV>.toml
+# on top of config.toml, and the shells and ./install set MISE_ENV="$(whoami)",
+# so only that user gets these.
+[tools]
+coursier = "2.1.24"
+java = "openjdk-21.0.2"
+sbt = "1.9.7"
+scala = "2.13.12"

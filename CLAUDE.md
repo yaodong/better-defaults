@@ -34,7 +34,7 @@ Example: `nvim/` → `~/.config/nvim`
 | `ghostty` | both | Shared `config` includes `platform.conf`, a gitignored link `link` points at `macos.conf` or `omarchy.conf` |
 | `git` | both | `~/.config/git/config` and `ignore`. Do not set `core.excludesfile` (it would shadow `~/.config/git/ignore`). `user.email` lives in machine-local `~/.config/git/config.local`. |
 | `starship` | both | Omarchy's prompt config |
-| `mise` | both | Global tools. Auto-install is disabled — install with `mise install`; `mise exec` won't download tools |
+| `mise` | both | Global tools. Auto-install is disabled — install with `mise install`. Never use `mise exec`/`mise x` as a probe: naming a tool installs every missing tool regardless of settings; use `mise where`. claude/codex are `os = ["linux"]`. The whole `mise/` dir is linked to `~/.config/mise`; per-user tools go in `mise/config.<whoami>.toml`, loaded via `MISE_ENV="$(whoami)"` (exported in `bash/.bashrc`, `zsh/.zshrc`, `./install`). JVM tools are in `config.yaodong.z.toml`. |
 | `claude` | both | `statusline.sh` → `~/.claude/statusline.sh`; `install-claude-statusline` wires it into `~/.claude/settings.json` |
 | `hypr` | Omarchy | `bindings.lua` only → `~/.config/hypr/bindings.lua` (the rest of `~/.config/hypr` stays machine-local). Edits auto-reload; validate with `hyprctl configerrors`. |
 | `bash` | Omarchy | Omarchy's `.bashrc` plus `vi`/`vim` aliases; supports `~/.bashrc_local` |

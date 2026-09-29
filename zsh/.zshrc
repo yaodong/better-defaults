@@ -14,6 +14,9 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 export LANG=en_US.UTF-8
 
+# Per-user mise tools: mise loads mise/config.<whoami>.toml on top of config.toml
+export MISE_ENV="${MISE_ENV:-$(whoami)}"
+
 export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
 # --- Shell (Omarchy: shell, inputrc) ---
