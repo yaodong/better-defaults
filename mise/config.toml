@@ -1,16 +1,17 @@
 # Global mise config (~/.config/mise/config.toml).
 # Per-project versions live in each repo's own .mise.toml and override these.
+# Per-user tools live in config.<whoami>.toml, loaded via MISE_ENV="$(whoami)"
+# (set in bash/.bashrc, zsh/.zshrc and ./install).
 [tools]
-claude = "latest"
-codex = "latest"
-coursier = "2.1.24"
+bun = "latest"
+# claude/codex come from mise on Omarchy only; macOS installs them its own way.
+claude = { version = "latest", os = ["linux"] }
+codex = { version = "latest", os = ["linux"] }
 gh = "latest"
-java = "openjdk-21.0.2"
+java = "temurin-21"
 node = "26.8.2"
 python = "3.12.12"
 ruby = "4.0.5"
-sbt = "1.9.7"
-scala = "2.13.12"
 
 [settings]
 # Honor .python-version / .ruby-version files everywhere (replaces pyenv/rbenv).

@@ -14,6 +14,9 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 export LANG=en_US.UTF-8
 
+# Per-user mise tools: mise loads mise/config.<whoami>.toml on top of config.toml
+export MISE_ENV="${MISE_ENV:-$(whoami)}"
+
 export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
 # --- Shell (Omarchy: shell, inputrc) ---
@@ -85,3 +88,10 @@ bindkey '^[[Z' autosuggest-accept # shift + tab
 
 # Source machine-local overrides
 [ -f "$HOME/.zshrc_local" ] && source "$HOME/.zshrc_local"
+
+# Ghostty: every new tab/window gets a fresh tmux session. Closing that session
+# closes the tab, instead of switching to another session (tmux.conf sets
+# detach-on-destroy off globally, as Omarchy does).
+if [ "$TERM_PROGRAM" = "ghostty" ] && [ -z "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+  exec tmux new-session -c "$HOME/Developer" \; set-option detach-on-destroy on
+fi

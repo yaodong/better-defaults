@@ -34,7 +34,7 @@ Example: `nvim/` → `~/.config/nvim`
 | `ghostty` | both | Shared `config` includes `platform.conf`, a gitignored link `link` points at `macos.conf` or `omarchy.conf` |
 | `git` | both | `~/.config/git/config` and `ignore`. Do not set `core.excludesfile` (it would shadow `~/.config/git/ignore`). `user.email` lives in machine-local `~/.config/git/config.local`. |
 | `starship` | both | Omarchy's prompt config |
-| `mise` | both | Global tools. Auto-install is disabled — install with `mise install`; `mise exec` won't download tools |
+| `mise` | both | Global tools. Auto-install is disabled — install with `mise install`. Never use `mise exec`/`mise x` as a probe: naming a tool installs every missing tool regardless of settings; use `mise where`. claude/codex are `os = ["linux"]`. The whole `mise/` dir is linked to `~/.config/mise`; per-user tools go in `mise/config.<whoami>.toml`, loaded via `MISE_ENV="$(whoami)"` (exported in `bash/.bashrc`, `zsh/.zshrc`, `./install`). Java (Temurin 21) is global; the other JVM tools (coursier, sbt, scala) are in `config.yaodong.z.toml`. |
 | `claude` | both | `statusline.sh` → `~/.claude/statusline.sh`; `install-claude-statusline` wires it into `~/.claude/settings.json` |
 | `hypr` | Omarchy | `bindings.lua` only → `~/.config/hypr/bindings.lua` (the rest of `~/.config/hypr` stays machine-local). Edits auto-reload; validate with `hyprctl configerrors`. |
 | `bash` | Omarchy | Omarchy's `.bashrc` plus `vi`/`vim` aliases; supports `~/.bashrc_local` |
@@ -67,10 +67,10 @@ When modifying themes: on macOS preserve the flow `macOS appearance -> app confi
 **`KEYBINDINGS.md` is the central list of every key this repo defines or changes.** Update it in the same change whenever you add, change, or remove a binding in any config.
 
 - **Avoid conflicts across layers.** When adding or updating keybinds in any config, check that they don't shadow keybinds in tools that run inside it (e.g., terminal keybinds must not conflict with Neovim keybinds, since Neovim runs inside the terminal).
-- **Tmux uses Omarchy's bindings** (Alt layer with no prefix, plus Omarchy's prefix keys), except the prefix is `C-j` — `C-Space` switches the input method, and `C-b` is not a second prefix so the shell and Neovim keep it. Extras: `prefix C-p`/`C-n` for previous/next window.
+- **Tmux uses Omarchy's bindings** (Omarchy's prefix keys, plus its `C-M-Arrows`/`C-M-S-Arrows` pane keys with no prefix), except the prefix is `C-j` — `C-Space` switches the input method, and `C-b` is not a second prefix so the shell and Neovim keep it. Extras: `prefix C-p`/`C-n` for previous/next window, `prefix Tab` for last window, and the common vim-style pane keys (`h/j/k/l` focus, `H/J/K/L` resize, `|`/`-` split), which replace Omarchy's `prefix h` split and `prefix K` kill-session. The rest of Omarchy's no-prefix Alt layer (`M-Enter` splits, `M-1`…`M-9`, `M-Left/Right`, `M-S-Left/Right`, `M-Up/Down`, `M-Escape`) is left out so Alt keys reach the shell and Neovim (e.g. Alt+arrows for word movement).
 - **Hyprland (Omarchy) owns `SUPER`.** `hypr/bindings.lua` holds the user's deliberate Mac-style overrides; don't add new ones to mimic macOS unless asked — the user adapts to Omarchy first.
-- **Global hotkeys (skhd, macOS) sit above every app.** `skhd/skhdrc` holds app launchers, mostly mirroring Omarchy's (`cmd+enter` Ghostty, `cmd+shift+{return,b}` Chrome, `f` Finder, `e` Gmail (Chrome PWA), `c` Calendar, `l` Slack, `/` 1Password). These are deliberate overrides in every app, including Ghostty (no fullscreen toggle) — e.g. they shadow Chrome's `cmd+shift+b` bookmarks bar. Use `~` passthrough (process-list syntax) for apps that must keep a key.
-- **Ghostty on macOS** sets `macos-option-as-alt`, so tmux's Alt layer works with Option.
+- **Global hotkeys (skhd, macOS) sit above every app.** `skhd/skhdrc` holds app launchers, mostly mirroring Omarchy's (`cmd+shift+{return,b}` Chrome, `f` Finder, `e` Gmail (Chrome PWA), `c` Calendar, `l` Slack, `/` 1Password). These are deliberate overrides in every app, e.g. they shadow Chrome's `cmd+shift+b` bookmarks bar. `cmd+enter` is deliberately not bound globally, so apps keep it. Use `~` passthrough (process-list syntax) for apps that must keep a key.
+- **Ghostty on macOS** sets `macos-option-as-alt`, so Option works as Alt (tmux's `C-M-Arrows`, shell `Alt+C`, word movement).
 
 ## Neovim Configuration
 

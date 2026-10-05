@@ -24,7 +24,8 @@ Keep this file in sync when you add, change, or remove a binding.
 
 Mac-style Super shortcuts on top of Omarchy's defaults. Most are sent on to the
 focused app as the Ctrl equivalent; in terminals the GUI ones do nothing, since
-Ctrl+Z / Ctrl+A mean something else there.
+Ctrl+Z / Ctrl+A mean something else there. "Browser" means the main browser
+window (Chrome, Chromium, Brave, Firefox, Zen), not web apps.
 
 | Key | Action | Replaces Omarchy default |
 |-----|--------|--------------------------|
@@ -36,6 +37,8 @@ Ctrl+Z / Ctrl+A mean something else there.
 | `Super+N` | New window (`Ctrl+N`) | |
 | `Super+F` | Find (`Ctrl+F`) | Full screen |
 | `Super+S` | Save (`Ctrl+S`) | Scratchpad |
+| `Super+B` / `Super+I` / `Super+U` | Bold / italic / underline | |
+| `Super+Shift+V` | Paste as plain text (`Ctrl+Shift+V`) | |
 | `Super+Shift+T` | Reopen closed tab (browser) | |
 | `Super+[` / `Super+]` | Back / forward (browser) | |
 | `Super+Return` | Open in new tab (browser, `Alt+Return`) | Terminal |
@@ -43,6 +46,54 @@ Ctrl+Z / Ctrl+A mean something else there.
 | `Super+Ctrl+F` | Full screen | Tiled full screen |
 | `Super+Alt+S` | Toggle scratchpad | Move window to scratchpad |
 | `Super+Shift+Alt+S` | Move window to scratchpad | |
+| `Super+Ctrl+Shift+3` | Screenshot of display | |
+| `Super+Ctrl+Shift+4` | Screenshot of region | |
+| `Super+Ctrl+Shift+5` | Capture menu | |
+| `` Super+` `` | Next window of the same app (across workspaces) | |
+
+Browser-only (do nothing elsewhere):
+
+| Key | Action |
+|-----|--------|
+| `Super+D` | Bookmark page |
+| `Super+Y` | History |
+| `Super+Shift+[` / `Super+Shift+]` | Previous / next tab |
+| `Super+Shift+R` | Hard reload |
+| `Super+.` | Stop loading |
+| `Super+Shift+J` | Downloads |
+| `Super+Alt+B` | Bookmark manager |
+| `Super+Alt+I` / `Super+Alt+J` / `Super+Alt+U` | DevTools / console / view source |
+| `Super+Shift+Delete` | Clear browsing data |
+
+Browser-aware: Chrome's ⌘ action in the browser, Omarchy's default elsewhere.
+
+| Key | In the browser | Elsewhere (Omarchy default) |
+|-----|----------------|-----------------------------|
+| `Super+T` | New tab | Toggle floating |
+| `Super+L` | Address bar | Toggle workspace layout |
+| `Super+K` | `Ctrl+K` (Docs link, command palettes) | Keybindings menu |
+| `Super+P` | Print | Pseudo window |
+| `Super+Shift+N` | Incognito window | Editor |
+| `Super+Shift+B` | Bookmarks bar | Browser |
+| `Super+Shift+A` | Tab search | ChatGPT |
+| `Super+Shift+C` | Inspect element | Calendar |
+| `Super+Alt+Left` / `Super+Alt+Right` | Previous / next tab | Move window into group |
+| `Super+Backspace` | Delete to line start | Toggle window transparency |
+
+macOS text editing in the browser (Ctrl is free there because Super covers
+Chrome's shortcuts). Other windows get the original key unchanged.
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+A` / `Ctrl+E` | Line start / end |
+| `Ctrl+B` / `Ctrl+F` | Back / forward a character |
+| `Ctrl+P` / `Ctrl+N` | Previous / next line |
+| `Ctrl+D` / `Ctrl+H` | Delete forward / backward |
+| `Ctrl+K` | Delete to line end |
+| `Alt+B` / `Alt+F`, `Alt+Left` / `Alt+Right` | Back / forward a word (use `Super+[` / `]` for history) |
+| `Alt+Shift+Left` / `Alt+Shift+Right` | Select by word |
+| `Alt+Up` / `Alt+Down` | Previous / next paragraph |
+| `Alt+Backspace` / `Alt+Delete` | Delete previous / next word |
 
 Not in this repo (machine-local `~/.config/hypr/input.lua`): **Caps Lock = Ctrl**;
 both Shifts together toggle real Caps Lock.
@@ -50,11 +101,10 @@ both Shifts together toggle real Caps Lock.
 ### macOS (skhd) — `skhd/skhdrc`
 
 App launchers mirroring Omarchy's `Super+Shift` launchers. They override the key
-in every app.
+in every app. `⌘+Return` is not bound, so each app keeps its own `⌘+Return`.
 
 | Key | Opens | Omarchy equivalent |
 |-----|-------|--------------------|
-| `⌘+Return` | Ghostty | ⚠️ `Super+Shift+Return` (terminal) |
 | `⌘+Shift+Return` | Chrome | ⚠️ `Super+Shift+B` (browser); `Super+Shift+Return` is the terminal on Omarchy |
 | `⌘+Shift+B` | Chrome | `Super+Shift+B` |
 | `⌘+Shift+F` | Finder at `~` | `Super+Shift+F` (file manager) |
@@ -73,7 +123,6 @@ Ghostty's defaults (Omarchy: `Ctrl+Shift+T` new tab; macOS: `⌘+T`).
 | Key | Action | Platform |
 |-----|--------|----------|
 | `Shift+Enter` | Sent as CSI-u so TUIs can tell it from Enter | both |
-| `Alt+Shift+Enter` | Sent as CSI-u so tmux sees `M-S-Enter` | both |
 | `Shift+Insert` / `Ctrl+Insert` | Paste / copy | Omarchy |
 | `Super+Ctrl+Shift+Alt+Arrows` | Resize split | Omarchy |
 | `⌘+D`, `⌘+Shift+D`, `⌘+Shift+Enter`, `⌘+[`, `⌘+]`, `⌘+Ctrl+=` | Unbound (splits live in tmux) | macOS |
@@ -81,18 +130,13 @@ Ghostty's defaults (Omarchy: `Ctrl+Shift+T` new tab; macOS: `⌘+T`).
 ## tmux
 
 `tmux/tmux.conf` — Omarchy's tmux bindings, prefix changed to `C-j`
-(`C-Space` switches the input method). `C-j ?` lists everything (Omarchy only).
+(`C-Space` switches the input method), plus vim-style prefix pane keys that
+replace Omarchy's `h` split and `K` kill-session. `C-j ?` lists everything (Omarchy only).
 
-### No prefix (Alt layer)
+### No prefix
 
 | Key | Action |
 |-----|--------|
-| `M-1` … `M-9` | Go to window N |
-| `M-Left` / `M-Right` | Previous / next window |
-| `M-S-Left` / `M-S-Right` | Move window left / right |
-| `M-Up` / `M-Down` | Previous / next session |
-| `M-Enter` / `M-S-Enter` | Split down / right |
-| `M-Escape` | Kill pane |
 | `C-M-Arrows` | Focus pane |
 | `C-M-S-Arrows` | Resize pane |
 
@@ -101,11 +145,14 @@ Ghostty's defaults (Omarchy: `Ctrl+Shift+T` new tab; macOS: `⌘+T`).
 | Key | Action |
 |-----|--------|
 | `C-j` | Send `C-j` to the app |
-| `h` / `v` | Split down / right |
+| `-` / `v` or `\|` | Split down / right *(`-`, `\|` ours)* |
+| `h` `j` `k` `l` | Focus pane *(ours)* |
+| `H` `J` `K` `L` | Resize pane, repeatable *(ours)* |
 | `x` | Kill pane |
-| `c` / `r` / `k` | New / rename / kill window |
+| `c` / `r` | New / rename window |
 | `C-p` / `C-n` | Previous / next window *(ours, not Omarchy's)* |
-| `C` / `R` / `K` | New / rename / kill session |
+| `Tab` | Last window *(ours)* |
+| `C` / `R` | New / rename session (kill with `:kill-session`) |
 | `P` / `N` | Previous / next session |
 | `q` | Reload config |
 | `?` | Show all bindings (Omarchy only) |

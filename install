@@ -58,6 +58,8 @@ section "Dotfiles"
 "$REPO_DIR/link"
 
 section "Runtimes"
+# Per-user tools (mise/config.<whoami>.toml) load via MISE_ENV, as in the shells.
+export MISE_ENV="${MISE_ENV:-$(whoami)}"
 # The global config (mise/config.toml) disables auto-install, so install
 # explicitly: global tools plus this repo's ruby/python (for overcommit).
 mise trust "$REPO_DIR/.mise.toml"

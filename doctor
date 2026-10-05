@@ -86,7 +86,7 @@ check_link "$HOME/.claude/statusline.sh"     "claude/statusline.sh"
 check_link "$HOME/.config/ghostty"           "ghostty"
 check_link "$HOME/.config/git/config"        "git/config"
 check_link "$HOME/.config/git/ignore"        "git/ignore"
-check_link "$HOME/.config/mise/config.toml"  "mise/config.toml"
+check_link "$HOME/.config/mise"              "mise"
 check_link "$HOME/.config/nvim"              "nvim"
 check_link "$HOME/.config/starship.toml"     "starship/starship.toml"
 check_link "$HOME/.config/tmux"              "tmux"
@@ -121,6 +121,11 @@ fi
 # --- mise ---
 section "mise"
 if command -v mise &>/dev/null; then
+  if [ "${MISE_ENV:-}" = "$(whoami)" ]; then
+    pass "MISE_ENV = $MISE_ENV"
+  else
+    warn "MISE_ENV = ${MISE_ENV:-<unset>} (expected $(whoami))" "open a new shell; bash/.bashrc and zsh/.zshrc export it"
+  fi
   missing="$(cd "$BASE_DIR" && mise ls --current --missing 2>/dev/null | awk '{print $1 "@" $2}' | tr '\n' ' ')"
   if [ -z "$missing" ]; then
     pass "all configured tools installed"
@@ -139,7 +144,8 @@ fi
 
 # --- Overcommit ---
 section "Overcommit"
-if command -v overcommit &>/dev/null || (command -v mise &>/dev/null && MISE_EXEC_AUTO_INSTALL=0 mise exec ruby -- overcommit --version &>/dev/null); then
+# `mise where` only reads; `mise exec ruby` would install missing tools.
+if command -v overcommit &>/dev/null || [ -x "$(command -v mise &>/dev/null && mise where ruby 2>/dev/null)/bin/overcommit" ]; then
   pre_commit="$BASE_DIR/.git/hooks/pre-commit"
   if [ -f "$pre_commit" ] && grep -q overcommit "$pre_commit" 2>/dev/null; then
     pass "hooks wired in this repo"

@@ -2,10 +2,10 @@
 # Syntax: https://github.com/asmvik/skhd
 #
 # App launchers, mostly mirroring Omarchy's SUPER / SUPER+SHIFT defaults. Each one
-# overrides the key in every app, including Ghostty's cmd+enter fullscreen.
+# overrides the key in every app. cmd+enter is left unbound so every app keeps it
+# (submit/send in web apps, Ghostty fullscreen).
 
 # Launch or focus an app
-cmd - return          : open -a Ghostty
 cmd + shift - return  : open -a "Google Chrome"
 cmd + shift - b       : open -a "Google Chrome"
 cmd + shift - e       : open -a Gmail
