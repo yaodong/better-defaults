@@ -133,7 +133,7 @@ macOS: `⌘+T` new tab, `⌘1`…`⌘9` / `⌘+Shift+[` / `]` to switch). Each t
 
 `tmux/tmux.conf` — Omarchy's tmux bindings, prefix changed to `C-j`
 (`C-Space` switches the input method), plus vim-style prefix pane keys that
-replace Omarchy's `h` split and `K` kill-session. `C-j ?` lists everything (Omarchy only).
+replace Omarchy's `h` / `v` splits, `k` kill-window and `K` kill-session. `C-j ?` lists everything (Omarchy only).
 
 ### No prefix
 
@@ -149,12 +149,12 @@ replace Omarchy's `h` split and `K` kill-session. `C-j ?` lists everything (Omar
 | Key | Action |
 |-----|--------|
 | `C-j` | Send `C-j` to the app |
-| `-` / `v` or `\|` | Split down / right *(`-`, `\|` ours)* |
+| `-` / `\|` | Split down / right *(ours)* |
 | `h` `j` `k` `l` | Focus pane *(ours)* |
 | `H` `J` `K` `L` | Resize pane, repeatable *(ours)* |
+| `M-Arrows`, `C-Arrows` | Unbound (tmux's default resize keys; use `H` `J` `K` `L`) |
 | `x` | Kill pane |
 | `c` / `r` | New / rename window |
-| `C-p` / `C-n` | Previous / next window *(ours, not Omarchy's)* |
 | `Tab` | Last window *(ours)* |
 | `C` / `R` | New / rename session (kill with `:kill-session`) |
 | `q` | Reload config |
