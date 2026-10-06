@@ -105,26 +105,28 @@ in every app. `⌘+Return` is not bound, so each app keeps its own `⌘+Return`.
 
 | Key | Opens | Omarchy equivalent |
 |-----|-------|--------------------|
-| `⌘+Shift+Return` | Chrome | ⚠️ `Super+Shift+B` (browser); `Super+Shift+Return` is the terminal on Omarchy |
-| `⌘+Shift+B` | Chrome | `Super+Shift+B` |
+| `⌘+Shift+Return` | Ghostty | `Super+Shift+Return` (terminal) |
+| `⌘+Shift+B` | Dia (Chrome if Dia isn't installed) | `Super+Shift+B` |
 | `⌘+Shift+F` | Finder at `~` | `Super+Shift+F` (file manager) |
-| `⌘+Shift+E` | Gmail | `Super+Shift+E` (email) |
+| `⌘+Shift+E` | HEY (Gmail if HEY isn't installed) | `Super+Shift+E` (email) |
 | `⌘+Shift+C` | Calendar | `Super+Shift+C` |
-| `⌘+Shift+L` | Slack | — |
+| `⌘+Shift+L` | Slack (Discord if Slack isn't installed) | — |
 | `⌘+Shift+/` | 1Password | `Super+Shift+/` (passwords) |
-
-⚠️ = the terminal/browser keys differ between the two machines.
 
 ## Ghostty
 
 `ghostty/config`, `macos.conf`, `omarchy.conf`. Tabs and splits otherwise use
-Ghostty's defaults (Omarchy: `Ctrl+Shift+T` new tab; macOS: `⌘+T`).
+Ghostty's defaults (Omarchy: `Ctrl+Shift+T` new tab, `Ctrl+Tab` / `Ctrl+PageUp/PageDown` to switch;
+macOS: `⌘+T` new tab, `⌘1`…`⌘9` / `⌘+Shift+[` / `]` to switch). Each tab runs its own tmux session.
 
 | Key | Action | Platform |
 |-----|--------|----------|
 | `Shift+Enter` | Sent as CSI-u so TUIs can tell it from Enter | both |
+| `Alt+1`…`Alt+9` | Unbound (Ghostty's goto tab), so tmux gets them | Omarchy |
+| `Alt+Shift+[` / `Alt+Shift+]` | Sent to tmux as `Alt+{` / `Alt+}` by physical key (works under a Chinese input method) | both |
 | `Shift+Insert` / `Ctrl+Insert` | Paste / copy | Omarchy |
 | `Super+Ctrl+Shift+Alt+Arrows` | Resize split | Omarchy |
+| `⌘+Shift+[` / `⌘+Shift+]` | Previous / next tab, bound to the physical keys so they work under a Chinese input method | macOS |
 | `⌘+D`, `⌘+Shift+D`, `⌘+Shift+Enter`, `⌘+[`, `⌘+]`, `⌘+Ctrl+=` | Unbound (splits live in tmux) | macOS |
 
 ## tmux
@@ -137,6 +139,8 @@ replace Omarchy's `h` split and `K` kill-session. `C-j ?` lists everything (Omar
 
 | Key | Action |
 |-----|--------|
+| `Alt+1`…`Alt+9` | Jump to window N |
+| `Alt+Shift+[` / `Alt+Shift+]` | Previous / next window *(ours; Omarchy uses `Alt+Left/Right`, kept for word movement)* |
 | `C-M-Arrows` | Focus pane |
 | `C-M-S-Arrows` | Resize pane |
 
@@ -153,7 +157,6 @@ replace Omarchy's `h` split and `K` kill-session. `C-j ?` lists everything (Omar
 | `C-p` / `C-n` | Previous / next window *(ours, not Omarchy's)* |
 | `Tab` | Last window *(ours)* |
 | `C` / `R` | New / rename session (kill with `:kill-session`) |
-| `P` / `N` | Previous / next session |
 | `q` | Reload config |
 | `?` | Show all bindings (Omarchy only) |
 | `y` / `Y` | Copy command line / current directory (tmux-yank) |

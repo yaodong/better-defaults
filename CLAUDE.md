@@ -48,7 +48,7 @@ Example: `nvim/` → `~/.config/nvim`
 **Omarchy:** the Omarchy theme picker is the source of truth.
 - **Ghostty** — `omarchy.conf` includes `~/.local/state/omarchy/current/theme/ghostty.conf`.
 - **Neovim** — `nvim/lua/plugins/theme.lua` (gitignored link created by `link`) points at the current Omarchy theme; `omarchy-theme-hotreload.lua` reapplies it live.
-- **Tmux** — `omarchy-theme-set-tmux` sets `window-style`/`window-active-style` on theme change, so `tmux.conf` must not set those two options.
+- **Tmux** — `omarchy-theme-set-tmux` sets `window-style`/`window-active-style` on theme change, so `tmux.conf` sets those two options only inside its macOS (`Darwin`) block.
 
 **macOS:** a unified dark/light setup follows macOS appearance. Themes: **Rose Pine Moon** (dark), **Rose Pine Dawn** (light).
 - **macOS appearance** — source of truth for dark/light mode.
@@ -56,7 +56,7 @@ Example: `nvim/` → `~/.config/nvim`
 - **Ghostty** and **Neovim** — follow macOS appearance from `macos.conf` and `appearance.lua`; `theme-sync` nudges running Neovim instances.
 
 **Both:**
-- **Tmux** — status bar uses ANSI color names, so it inherits the terminal palette with no theme coupling.
+- **Tmux** — status bar uses ANSI color names, so it inherits the terminal palette with no theme coupling. The accent (`@accent`) is blue on Omarchy; macOS keeps its own look (cyan accent, dimmed inactive panes, heavy borders with pane-number badges).
 - **Lazygit** — uses default terminal-aware colors; do not update Lazygit config from theme scripts.
 - **Claude Code** — uses built-in auto sync; do not update `~/.claude.json` from theme scripts.
 
@@ -67,10 +67,10 @@ When modifying themes: on macOS preserve the flow `macOS appearance -> app confi
 **`KEYBINDINGS.md` is the central list of every key this repo defines or changes.** Update it in the same change whenever you add, change, or remove a binding in any config.
 
 - **Avoid conflicts across layers.** When adding or updating keybinds in any config, check that they don't shadow keybinds in tools that run inside it (e.g., terminal keybinds must not conflict with Neovim keybinds, since Neovim runs inside the terminal).
-- **Tmux uses Omarchy's bindings** (Omarchy's prefix keys, plus its `C-M-Arrows`/`C-M-S-Arrows` pane keys with no prefix), except the prefix is `C-j` — `C-Space` switches the input method, and `C-b` is not a second prefix so the shell and Neovim keep it. Extras: `prefix C-p`/`C-n` for previous/next window, `prefix Tab` for last window, and the common vim-style pane keys (`h/j/k/l` focus, `H/J/K/L` resize, `|`/`-` split), which replace Omarchy's `prefix h` split and `prefix K` kill-session. The rest of Omarchy's no-prefix Alt layer (`M-Enter` splits, `M-1`…`M-9`, `M-Left/Right`, `M-S-Left/Right`, `M-Up/Down`, `M-Escape`) is left out so Alt keys reach the shell and Neovim (e.g. Alt+arrows for word movement).
+- **Tmux uses Omarchy's bindings** (Omarchy's prefix keys, plus its `C-M-Arrows`/`C-M-S-Arrows` pane keys with no prefix), except the prefix is `C-j` — `C-Space` switches the input method, and `C-b` is not a second prefix so the shell and Neovim keep it. Its no-prefix `M-1`…`M-9` (window N) are kept too, with Omarchy's Ghostty `Alt+1`…`9` goto-tab defaults unbound so tmux gets them. Previous/next window is `M-{`/`M-}` (`Alt+Shift+[`/`]`, which Ghostty sends by physical key), mirroring `Cmd+Shift+[`/`]` for tabs; Omarchy's `M-Left/Right` and `M-S-Left/Right` are left out so Alt+arrows keep moving by word. Extras: `prefix C-p`/`C-n` for previous/next window, `prefix Tab` for last window, and the common vim-style pane keys (`h/j/k/l` focus, `H/J/K/L` resize, `|`/`-` split), which replace Omarchy's `prefix h` split and `prefix K` kill-session. Omarchy's session switching (`prefix P`/`N`, `M-Up/Down`) is dropped: each Ghostty tab is its own session, so switch tabs instead. The rest of Omarchy's no-prefix Alt layer (`M-Enter` splits, `M-Escape`) is left out so those Alt keys reach the shell and Neovim.
 - **Hyprland (Omarchy) owns `SUPER`.** `hypr/bindings.lua` holds the user's deliberate Mac-style overrides; don't add new ones to mimic macOS unless asked — the user adapts to Omarchy first.
-- **Global hotkeys (skhd, macOS) sit above every app.** `skhd/skhdrc` holds app launchers, mostly mirroring Omarchy's (`cmd+shift+{return,b}` Chrome, `f` Finder, `e` Gmail (Chrome PWA), `c` Calendar, `l` Slack, `/` 1Password). These are deliberate overrides in every app, e.g. they shadow Chrome's `cmd+shift+b` bookmarks bar. `cmd+enter` is deliberately not bound globally, so apps keep it. Use `~` passthrough (process-list syntax) for apps that must keep a key.
-- **Ghostty on macOS** sets `macos-option-as-alt`, so Option works as Alt (tmux's `C-M-Arrows`, shell `Alt+C`, word movement).
+- **Global hotkeys (skhd, macOS) sit above every app.** `skhd/skhdrc` holds app launchers, mostly mirroring Omarchy's (`cmd+shift+return` Ghostty, `cmd+shift+b` Dia (Chrome if Dia is missing), `f` Finder, `e` HEY (Gmail Chrome PWA if HEY is missing), `c` Calendar, `l` Slack (Discord if Slack is missing), `/` 1Password). These are deliberate overrides in every app, e.g. they shadow Chrome's `cmd+shift+b` bookmarks bar. `cmd+enter` is deliberately not bound globally, so apps keep it. Use `~` passthrough (process-list syntax) for apps that must keep a key.
+- **Ghostty on macOS** sets `macos-option-as-alt`, so Option works as Alt (tmux's `M-1`…`9` and `C-M-Arrows`; shell `Alt+C`, word movement).
 
 ## Neovim Configuration
 

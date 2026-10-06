@@ -6,11 +6,11 @@
 # (submit/send in web apps, Ghostty fullscreen).
 
 # Launch or focus an app
-cmd + shift - return  : open -a "Google Chrome"
-cmd + shift - b       : open -a "Google Chrome"
-cmd + shift - e       : open -a Gmail
+cmd + shift - return  : open -a Ghostty
+cmd + shift - b       : open -a Dia 2>/dev/null || open -a "Google Chrome"
+cmd + shift - e       : open -a HEY 2>/dev/null || open -a Gmail
 cmd + shift - c       : open -a Calendar
-cmd + shift - l       : open -a Slack
+cmd + shift - l       : open -a Slack 2>/dev/null || open -a Discord
 # 0x2C = slash
 cmd + shift - 0x2C    : open -a 1Password
 

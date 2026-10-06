@@ -16,4 +16,9 @@ clipboard-trim-trailing-spaces = true
 # Send Shift+Enter as CSI-u so TUIs can distinguish it from Enter.
 keybind = shift+enter=csi:13;2u
 
+# Send Alt+Shift+[ / ] to tmux (previous/next window) by physical key, so they
+# also work under a Chinese input method, which turns [ ] into 【 】.
+keybind = alt+shift+bracket_left=esc:{
+keybind = alt+shift+bracket_right=esc:}
+
 config-file = ?platform.conf
