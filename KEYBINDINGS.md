@@ -154,10 +154,10 @@ replace Omarchy's `h` / `v` splits, `k` kill-window and `K` kill-session. `C-j ?
 | `H` `J` `K` `L` | Resize pane, repeatable *(ours)* |
 | `M-Arrows`, `C-Arrows` | Unbound (tmux's default resize keys; use `H` `J` `K` `L`) |
 | `x` | Kill pane |
-| `c` / `r` | New / rename window |
+| `c` | New window |
 | `Tab` | Last window *(ours)* |
-| `C` / `R` | New / rename session (kill with `:kill-session`) |
-| `q` | Reload config |
+| `C` | New session (kill with `:kill-session`) |
+| `C-r` | Reload config *(ours; Omarchy uses `q`, left as tmux's display-panes. Rename with tmux's `,` / `$`)* |
 | `?` | Show all bindings (Omarchy only) |
 | `y` / `Y` | Copy command line / current directory (tmux-yank) |
 | `I` / `U` / `M-u` | Install / update / clean plugins (tpm) |
