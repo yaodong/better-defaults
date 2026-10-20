@@ -106,7 +106,7 @@ in every app. `⌘+Return` is not bound, so each app keeps its own `⌘+Return`.
 | Key | Opens | Omarchy equivalent |
 |-----|-------|--------------------|
 | `⌘+Shift+Return` | Ghostty | `Super+Shift+Return` (terminal) |
-| `⌘+Shift+B` | Dia (Chrome if Dia isn't installed) | `Super+Shift+B` |
+| `⌘+Shift+B` | Chrome | `Super+Shift+B` |
 | `⌘+Shift+F` | Finder at `~` | `Super+Shift+F` (file manager) |
 | `⌘+Shift+E` | HEY (Gmail if HEY isn't installed) | `Super+Shift+E` (email) |
 | `⌘+Shift+C` | Calendar | `Super+Shift+C` |
